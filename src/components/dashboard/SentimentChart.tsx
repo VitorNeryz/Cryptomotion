@@ -11,6 +11,7 @@ import {
   TooltipProps
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { TimeFrame } from "@/components/filters/TimeFilter";
 
 interface SentimentChartProps {
   data: Array<{
@@ -18,7 +19,7 @@ interface SentimentChartProps {
     sentiment: number;
     volume?: number;
   }>;
-  timeframe?: "1h" | "24h" | "7d" | "30d";
+  timeframe?: TimeFrame;
   height?: number;
   showGrid?: boolean;
   showTooltip?: boolean;
@@ -42,6 +43,8 @@ export function SentimentChart({
       case "7d":
         return date.toLocaleDateString([], { weekday: 'short' });
       case "30d":
+        return date.toLocaleDateString([], { day: 'numeric', month: 'short' });
+      case "all":
         return date.toLocaleDateString([], { day: 'numeric', month: 'short' });
       default:
         return date.toLocaleDateString();
