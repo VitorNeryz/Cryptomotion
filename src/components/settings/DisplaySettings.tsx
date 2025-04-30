@@ -8,19 +8,46 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Moon, Sun } from "lucide-react";
 
-type ThemeMode = "dark" | "light";
 type Language = "pt" | "en";
 
 export function DisplaySettings() {
-  const [theme, setTheme] = useState<ThemeMode>("dark");
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [language, setLanguage] = useState<Language>("pt");
   const { toast } = useToast();
 
-  // Mock function for future implementation
+  // Load preferences from localStorage on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    const savedLanguage = localStorage.getItem("language") as Language | null;
+    
+    if (savedTheme) {
+      setIsDarkMode(savedTheme === "dark");
+      applyTheme(savedTheme === "dark");
+    }
+    
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
+  }, []);
+
+  const applyTheme = (isDark: boolean) => {
+    // Apply theme to document
+    const root = document.documentElement;
+    if (isDark) {
+      root.classList.add('dark-theme');
+      root.classList.remove('light-theme');
+    } else {
+      root.classList.add('light-theme');
+      root.classList.remove('dark-theme');
+    }
+  }
+
+  // Function to toggle dark mode
   const toggleDarkMode = (isDark: boolean) => {
+    setIsDarkMode(isDark);
     const newTheme = isDark ? "dark" : "light";
-    setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
+    applyTheme(isDark);
     
     toast({
       title: "Tema alterado",
@@ -28,7 +55,7 @@ export function DisplaySettings() {
     });
   };
 
-  // Mock function for future implementation
+  // Function to change language
   const changeLanguage = (lang: Language) => {
     setLanguage(lang);
     localStorage.setItem("language", lang);
@@ -38,14 +65,6 @@ export function DisplaySettings() {
       description: lang === "pt" ? "Português selecionado" : "English selected"
     });
   };
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as ThemeMode | null;
-    const savedLanguage = localStorage.getItem("language") as Language | null;
-    
-    if (savedTheme) setTheme(savedTheme);
-    if (savedLanguage) setLanguage(savedLanguage);
-  }, []);
 
   return (
     <div className="space-y-6">
@@ -62,7 +81,7 @@ export function DisplaySettings() {
               <Sun className="h-4 w-4 text-muted-foreground" />
               <Switch 
                 id="dark-mode" 
-                checked={theme === "dark"}
+                checked={isDarkMode}
                 onCheckedChange={toggleDarkMode}
               />
               <Moon className="h-4 w-4 text-muted-foreground" />
@@ -99,6 +118,9 @@ export function DisplaySettings() {
               variant="destructive" 
               onClick={() => {
                 localStorage.clear();
+                setIsDarkMode(true);
+                setLanguage("pt");
+                applyTheme(true);
                 toast({
                   title: "Dados limpos",
                   description: "Todos os dados locais foram removidos."

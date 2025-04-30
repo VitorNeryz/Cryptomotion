@@ -8,8 +8,7 @@ import {
   Settings,
   Menu,
   X,
-  Star,
-  Bell
+  Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -27,22 +26,10 @@ export function AppSidebar() {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
   
-  // Get alert count from localStorage
-  const getAlertCount = () => {
-    try {
-      const alerts = localStorage.getItem("cryptoAlerts");
-      if (!alerts) return 0;
-      return JSON.parse(alerts).filter((a: any) => a.active).length;
-    } catch (error) {
-      return 0;
-    }
-  };
-  
   const links: SidebarLink[] = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/" },
     { icon: TrendingUp, label: "Criptomoedas", href: "/cryptocurrencies" },
     { icon: BarChart3, label: "Análise de Mercado", href: "/market-analysis" },
-    { icon: Bell, label: "Alertas", href: "/settings", badge: getAlertCount() },
     { icon: Settings, label: "Configurações", href: "/settings" },
   ];
 
