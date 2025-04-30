@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import CryptoDetail from "./pages/CryptoDetail";
 import Cryptocurrencies from "./pages/Cryptocurrencies";
 import MarketAnalysis from "./pages/MarketAnalysis";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/crypto/:id" element={<CryptoDetail />} />
           <Route path="/cryptocurrencies" element={<Cryptocurrencies />} />
           <Route path="/market-analysis" element={<MarketAnalysis />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

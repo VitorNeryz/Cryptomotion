@@ -7,14 +7,19 @@ import { CryptoTable } from "@/components/dashboard/CryptoTable";
 import { LiveIndicator } from "@/components/dashboard/LiveIndicator";
 import { ViewToggle } from "@/components/layout/ViewToggle";
 import { AppSidebar } from "@/components/layout/AppSidebar";
+import { TimeFilter, TimeFrame } from "@/components/filters/TimeFilter";
+import { InsightPanel } from "@/components/dashboard/InsightPanel";
 import { mockCryptos, generateSentimentData } from "@/services/mockData";
+import { useToast } from "@/hooks/use-toast";
 
 type ViewMode = "compact" | "expanded";
 
 const Index = () => {
   const [view, setView] = useState<ViewMode>("compact");
+  const [timeFrame, setTimeFrame] = useState<TimeFrame>("24h");
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleString());
   const [marketSentiment, setMarketSentiment] = useState(generateSentimentData(30));
+  const { toast } = useToast();
   
   // Simulate real-time updates
   useEffect(() => {
@@ -34,6 +39,88 @@ const Index = () => {
     
     return () => clearInterval(interval);
   }, []);
+
+  // Check for alerts when sentiment changes
+  useEffect(() => {
+    const checkAlerts = () => {
+      try {
+        const savedAlerts = localStorage.getItem("cryptoAlerts");
+        if (!savedAlerts) return;
+        
+        const alerts = JSON.parse(savedAlerts);
+        const latestSentiment = marketSentiment.length > 0 ? 
+          marketSentiment[marketSentiment.length - 1].sentiment : 0;
+        
+        // Check for market sentiment alerts
+        const marketAlerts = alerts.filter(
+          (alert) => 
+            alert.active && 
+            alert.cryptoId === "market" && 
+            ((alert.direction === "above" && latestSentiment > alert.sentimentThreshold) || 
+             (alert.direction === "below" && latestSentiment < alert.sentimentThreshold))
+        );
+        
+        // Show notifications for triggered alerts
+        marketAlerts.forEach(alert => {
+          toast({
+            title: `Alerta: Sentimento de Mercado`,
+            description: `O sentimento de mercado está ${alert.direction === "above" ? "acima" : "abaixo"} de ${alert.sentimentThreshold.toFixed(2)}`,
+          });
+        });
+        
+        // Check for specific crypto alerts
+        mockCryptos.forEach(crypto => {
+          const cryptoAlerts = alerts.filter(
+            (alert) => 
+              alert.active && 
+              alert.cryptoId === crypto.id && 
+              ((alert.direction === "above" && crypto.sentimentScore > alert.sentimentThreshold) || 
+               (alert.direction === "below" && crypto.sentimentScore < alert.sentimentThreshold))
+          );
+          
+          cryptoAlerts.forEach(alert => {
+            toast({
+              title: `Alerta: ${crypto.name}`,
+              description: `O sentimento de ${crypto.name} está ${alert.direction === "above" ? "acima" : "abaixo"} de ${alert.sentimentThreshold.toFixed(2)}`,
+            });
+          });
+        });
+      } catch (error) {
+        console.error("Error checking alerts:", error);
+      }
+    };
+    
+    // Check alerts when sentiment data changes
+    checkAlerts();
+  }, [marketSentiment, toast]);
+
+  // Handle time frame changes
+  const handleTimeFrameChange = (newTimeFrame: TimeFrame) => {
+    setTimeFrame(newTimeFrame);
+    
+    // Regenerate data based on selected time frame
+    let days = 30;
+    
+    switch (newTimeFrame) {
+      case "1h":
+        days = 1;
+        break;
+      case "24h":
+        days = 1;
+        break;
+      case "7d":
+        days = 7;
+        break;
+      case "30d":
+        days = 30;
+        break;
+      case "all":
+        days = 90;
+        break;
+    }
+    
+    setMarketSentiment(generateSentimentData(days));
+  };
 
   // Get the latest market sentiment value
   const latestSentiment = marketSentiment.length > 0 ? 
@@ -72,33 +159,45 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Market Sentiment Overview */}
-        <section className="mb-8">
-          <Card className="glass-card">
-            <CardHeader className="pb-2">
-              <CardTitle>Sentimento do Mercado</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col md:flex-row gap-4 items-start md:items-center mb-4">
-                <div className="bg-dashboard-card px-4 py-2 rounded-lg">
-                  <p className="text-sm text-muted-foreground">Sentimento Atual</p>
-                  <p className={`text-2xl font-bold ${getSentimentClass(latestSentiment)}`}>
-                    {getSentimentText(latestSentiment)}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Market Sentiment Overview */}
+          <div className="lg:col-span-2">
+            <Card className="glass-card">
+              <CardHeader className="pb-2 flex flex-row justify-between items-center">
+                <CardTitle>Sentimento do Mercado</CardTitle>
+                <TimeFilter 
+                  defaultValue={timeFrame} 
+                  onChange={handleTimeFrameChange}
+                  className="border-none bg-transparent"
+                />
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center mb-4">
+                  <div className="bg-dashboard-card px-4 py-2 rounded-lg">
+                    <p className="text-sm text-muted-foreground">Sentimento Atual</p>
+                    <p className={`text-2xl font-bold ${getSentimentClass(latestSentiment)}`}>
+                      {getSentimentText(latestSentiment)}
+                    </p>
+                  </div>
+                  <p className="text-sm md:text-base text-muted-foreground">
+                    O sentimento do mercado está {latestSentiment > 0 ? "positivo" : latestSentiment < 0 ? "negativo" : "neutro"} 
+                    nas últimas {timeFrame === "1h" ? "horas" : timeFrame === "24h" ? "24 horas" : timeFrame === "7d" ? "7 dias" : "30 dias"}, com uma pontuação de sentimento de{" "}
+                    <span className={`font-medium ${getSentimentClass(latestSentiment)}`}>
+                      {latestSentiment.toFixed(2)}
+                    </span>
                   </p>
                 </div>
-                <p className="text-sm md:text-base text-muted-foreground">
-                  O sentimento do mercado está {latestSentiment > 0 ? "positivo" : latestSentiment < 0 ? "negativo" : "neutro"} 
-                  nas últimas 24 horas, com uma pontuação de sentimento de{" "}
-                  <span className={`font-medium ${getSentimentClass(latestSentiment)}`}>
-                    {latestSentiment.toFixed(2)}
-                  </span>
-                </p>
-              </div>
-              
-              <SentimentChart data={marketSentiment} />
-            </CardContent>
-          </Card>
-        </section>
+                
+                <SentimentChart data={marketSentiment} timeframe={timeFrame} />
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Insights Panel */}
+          <div className="lg:col-span-1">
+            <InsightPanel cryptos={mockCryptos} />
+          </div>
+        </div>
 
         {/* Top Cryptocurrencies */}
         <section className="mb-8">
