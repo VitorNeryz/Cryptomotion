@@ -45,6 +45,11 @@
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 225 25% 20%;
     --sidebar-ring: 224 76% 48%;
+
+    /* Dashboard specific colors for dark mode */
+    --dashboard-dark: 224 25% 14%;
+    --dashboard-card: 226 25% 19%;
+    --dashboard-border: 225 24% 25%;
   }
 
   /* Light theme */
@@ -85,6 +90,11 @@
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214 32% 91%;
     --sidebar-ring: 221 83% 53%;
+    
+    /* Dashboard specific colors for light mode */
+    --dashboard-dark: 210 40% 98%;
+    --dashboard-card: 0 0% 100%;
+    --dashboard-border: 214 32% 91%;
   }
 }
 
@@ -94,13 +104,13 @@
   }
 
   body {
-    @apply bg-dashboard-dark text-foreground;
+    @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
   }
 }
 
 .glass-card {
-  @apply bg-dashboard-card/50 backdrop-blur-sm border border-dashboard-border/50 rounded-lg shadow-lg;
+  @apply bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg shadow-lg;
 }
 
 .sentiment-pill {

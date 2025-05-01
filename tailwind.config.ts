@@ -26,9 +26,9 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				dashboard: {
-					dark: '#1A1F2C',
-					card: '#232A3B',
-					border: '#2D3748',
+					dark: 'hsl(var(--dashboard-dark))',
+					card: 'hsl(var(--dashboard-card))',
+					border: 'hsl(var(--dashboard-border))',
 				},
 				sentiment: {
 					positive: '#4ADE80',

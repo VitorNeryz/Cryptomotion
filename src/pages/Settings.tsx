@@ -11,7 +11,7 @@ const Settings = () => {
   const [lastUpdated] = useState(new Date().toLocaleString());
 
   return (
-    <div className="min-h-screen bg-dashboard-dark pb-16">
+    <div className="min-h-screen bg-background text-foreground pb-16">
       <AppSidebar />
       
       <main className="p-4 sm:p-6 md:p-8 ml-0 md:ml-64">
@@ -42,7 +42,7 @@ const Settings = () => {
                 <DisplaySettings />
               </TabsContent>
               <TabsContent value="dados">
-                <div className="p-4 rounded-md bg-dashboard-card">
+                <div className="p-4 rounded-md bg-card text-card-foreground">
                   <p>Configurações de dados serão implementadas em breve.</p>
                 </div>
               </TabsContent>

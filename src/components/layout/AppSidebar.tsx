@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -7,8 +7,7 @@ import {
   BarChart3, 
   Settings,
   Menu,
-  X,
-  Star
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -49,7 +48,7 @@ export function AppSidebar() {
       {isMobile && (
         <button
           onClick={toggleSidebar}
-          className="fixed top-4 left-4 z-50 p-2 rounded-md bg-dashboard-card text-foreground"
+          className="fixed top-4 left-4 z-50 p-2 rounded-md bg-card text-foreground"
         >
           <Menu className="h-6 w-6" />
         </button>
@@ -78,10 +77,10 @@ export function AppSidebar() {
           {/* Header */}
           <div className="flex items-center justify-between mb-8 mt-4">
             <div className="flex items-center">
-              <div className="font-bold text-xl">CryptoPulse</div>
+              <div className="font-bold text-xl text-sidebar-foreground">CryptoPulse</div>
             </div>
             {isMobile && (
-              <button onClick={closeSidebar} className="text-muted-foreground hover:text-foreground">
+              <button onClick={closeSidebar} className="text-muted-foreground hover:text-sidebar-foreground">
                 <X className="h-5 w-5" />
               </button>
             )}
@@ -114,7 +113,7 @@ export function AppSidebar() {
           </nav>
 
           {/* Footer */}
-          <div className="pt-4 mt-auto border-t border-dashboard-border">
+          <div className="pt-4 mt-auto border-t border-sidebar-border">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
@@ -123,7 +122,7 @@ export function AppSidebar() {
                 <span className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-sidebar rounded-full"></span>
               </div>
               <div>
-                <div className="text-sm font-medium">CryptoPulse Insights</div>
+                <div className="text-sm font-medium text-sidebar-foreground">CryptoPulse Insights</div>
                 <div className="text-xs text-muted-foreground">Análise em tempo real</div>
               </div>
             </div>

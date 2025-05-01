@@ -22,13 +22,17 @@ export function DisplaySettings() {
     
     if (savedTheme) {
       setIsDarkMode(savedTheme === "dark");
-      applyTheme(savedTheme === "dark");
     }
     
     if (savedLanguage) {
       setLanguage(savedLanguage);
     }
   }, []);
+
+  // Effect to apply theme whenever isDarkMode changes
+  useEffect(() => {
+    applyTheme(isDarkMode);
+  }, [isDarkMode]);
 
   const applyTheme = (isDark: boolean) => {
     // Apply theme to document
@@ -40,14 +44,13 @@ export function DisplaySettings() {
       root.classList.add('light-theme');
       root.classList.remove('dark-theme');
     }
-  }
+  };
 
   // Function to toggle dark mode
   const toggleDarkMode = (isDark: boolean) => {
     setIsDarkMode(isDark);
     const newTheme = isDark ? "dark" : "light";
     localStorage.setItem("theme", newTheme);
-    applyTheme(isDark);
     
     toast({
       title: "Tema alterado",
@@ -68,11 +71,11 @@ export function DisplaySettings() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-dashboard-card border-dashboard-border">
+      <Card className="bg-card border-border">
         <CardContent className="pt-6 space-y-4">
           <div className="flex justify-between items-center">
             <div className="space-y-0.5">
-              <Label htmlFor="dark-mode">Modo Escuro</Label>
+              <Label htmlFor="dark-mode" className="text-foreground">Modo Escuro</Label>
               <p className="text-sm text-muted-foreground">
                 Alterne entre os modos claro e escuro
               </p>
@@ -90,12 +93,12 @@ export function DisplaySettings() {
         </CardContent>
       </Card>
       
-      <Card className="bg-dashboard-card border-dashboard-border">
+      <Card className="bg-card border-border">
         <CardContent className="pt-6 space-y-4">
           <div className="space-y-2">
-            <Label>Idioma</Label>
+            <Label className="text-foreground">Idioma</Label>
             <Select value={language} onValueChange={(value) => changeLanguage(value as Language)}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-background text-foreground">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -107,10 +110,10 @@ export function DisplaySettings() {
         </CardContent>
       </Card>
       
-      <Card className="bg-dashboard-card border-dashboard-border">
+      <Card className="bg-card border-border">
         <CardContent className="pt-6 space-y-4">
           <div className="space-y-2">
-            <Label>Limpar Dados Locais</Label>
+            <Label className="text-foreground">Limpar Dados Locais</Label>
             <p className="text-sm text-muted-foreground">
               Remover todos os dados salvos localmente, incluindo alertas e preferências
             </p>
