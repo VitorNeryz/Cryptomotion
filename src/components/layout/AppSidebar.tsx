@@ -76,8 +76,9 @@ export function AppSidebar() {
         <div className="h-full flex flex-col p-4">
           {/* Header */}
           <div className="flex items-center justify-between mb-8 mt-4">
-            <div className="flex items-center">
-              <div className="font-bold text-xl text-sidebar-foreground">CryptoPulse</div>
+            <div className="flex items-center gap-2">
+              <img src="/cryptomotion-logo.png" alt="Cryptomotion Logo" className="w-8 h-8" />
+              <div className="font-bold text-xl text-sidebar-foreground">Cryptomotion</div>
             </div>
             {isMobile && (
               <button onClick={closeSidebar} className="text-muted-foreground hover:text-sidebar-foreground">
@@ -116,13 +117,13 @@ export function AppSidebar() {
           <div className="pt-4 mt-auto border-t border-sidebar-border">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                  <span className="text-sm font-bold text-white">CP</span>
+                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center overflow-hidden">
+                  <img src="/cryptomotion-logo.png" alt="Cryptomotion Logo" className="w-8 h-8" />
                 </div>
                 <span className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-sidebar rounded-full"></span>
               </div>
               <div>
-                <div className="text-sm font-medium text-sidebar-foreground">CryptoPulse Insights</div>
+                <div className="text-sm font-medium text-sidebar-foreground">Cryptomotion</div>
                 <div className="text-xs text-muted-foreground">Análise em tempo real</div>
               </div>
             </div>
