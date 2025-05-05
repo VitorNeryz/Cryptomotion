@@ -19,7 +19,7 @@ Siga esses passos:
 git clone git@github.com:VitorNeryz/Cryptomotion.git
 
 # Passo 2: Navegue até o diretório do projeto.
-cd <Cryptomotion>
+cd Cryptomotion
 
 # Passo 3: Instale as dependências necessárias.
 npm i
@@ -28,7 +28,7 @@ npm i
 npm run dev
 ```
 
-## Quais tecnologias foram utiizadas nesse projeto?
+## Quais tecnologias foram utilizadas nesse projeto?
 
 Esse projeto foi feito utilizando:
 
