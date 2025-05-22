@@ -6,6 +6,8 @@ import { LiveIndicator } from "@/components/dashboard/LiveIndicator";
 import { KeywordCloud } from "@/components/dashboard/KeywordCloud";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { generateSentimentData, generateKeywords, mockCryptos } from "@/services/mockData";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { CryptoCard } from "@/components/dashboard/CryptoCard";
 
 const timeframeOptions = [
   { value: "24h", label: "24H" },
@@ -52,10 +54,15 @@ const MarketAnalysis = () => {
     return sortedByChange.slice(0, 5);
   };
   
-  // Get top sentiment data
-  const getTopSentiment = () => {
-    const sortedBySentiment = [...mockCryptos].sort((a, b) => Math.abs(b.sentimentScore) - Math.abs(a.sentimentScore));
-    return sortedBySentiment.slice(0, 5);
+  // Filter for positive and negative sentiment cryptos
+  const getPositiveSentimentCryptos = () => {
+    return [...mockCryptos].filter(crypto => crypto.sentimentScore > 0.2)
+      .sort((a, b) => b.sentimentScore - a.sentimentScore);
+  };
+  
+  const getNegativeSentimentCryptos = () => {
+    return [...mockCryptos].filter(crypto => crypto.sentimentScore < -0.2)
+      .sort((a, b) => a.sentimentScore - b.sentimentScore);
   };
 
   return (
@@ -159,30 +166,40 @@ const MarketAnalysis = () => {
           </div>
         </section>
 
-        {/* Top Sentiment */}
-        <section>
-          <Card className="glass-card">
-            <CardHeader className="pb-2">
-              <CardTitle>Sentimentos Extremos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {getTopSentiment().map((crypto) => (
-                  <div key={crypto.id} className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <div className="font-medium">{crypto.name}</div>
-                      <div className="text-xs bg-dashboard-border px-2 py-0.5 rounded-full text-muted-foreground">
-                        {crypto.symbol}
-                      </div>
-                    </div>
-                    <div className={`font-medium ${getSentimentClass(crypto.sentimentScore)}`}>
-                      {getSentimentText(crypto.sentimentScore)} ({crypto.sentimentScore.toFixed(2)})
-                    </div>
-                  </div>
+        {/* Positive Sentiment Carousel */}
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-4">Sentimentos Extremamente Positivos</h2>
+          <div className="relative">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {getPositiveSentimentCryptos().map((crypto) => (
+                  <CarouselItem key={crypto.id} className="md:basis-1/2 lg:basis-1/3">
+                    <CryptoCard crypto={crypto} />
+                  </CarouselItem>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
+              </CarouselContent>
+              <CarouselPrevious className="absolute -left-4 top-1/2 transform -translate-y-1/2" />
+              <CarouselNext className="absolute -right-4 top-1/2 transform -translate-y-1/2" />
+            </Carousel>
+          </div>
+        </section>
+
+        {/* Negative Sentiment Carousel */}
+        <section>
+          <h2 className="text-xl font-bold mb-4">Sentimentos Extremamente Negativos</h2>
+          <div className="relative">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {getNegativeSentimentCryptos().map((crypto) => (
+                  <CarouselItem key={crypto.id} className="md:basis-1/2 lg:basis-1/3">
+                    <CryptoCard crypto={crypto} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="absolute -left-4 top-1/2 transform -translate-y-1/2" />
+              <CarouselNext className="absolute -right-4 top-1/2 transform -translate-y-1/2" />
+            </Carousel>
+          </div>
         </section>
       </main>
     </div>

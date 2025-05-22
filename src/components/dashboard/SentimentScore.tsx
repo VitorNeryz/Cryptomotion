@@ -31,7 +31,7 @@ export function SentimentScore({ score, size = "md", showLabel = true }: Sentime
   const normalizedScore = ((score + 1) / 2) * 100;
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 mt-4">
       {showLabel && (
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>Negativo</span>
@@ -46,7 +46,7 @@ export function SentimentScore({ score, size = "md", showLabel = true }: Sentime
         />
       </div>
       {showLabel && (
-        <div className="text-xs font-medium mt-1">
+        <div className="text-xs font-medium mt-2">
           Sentimento: <span className={cn("font-semibold", {
             "text-sentiment-positive": score > 0.2,
             "text-sentiment-negative": score < -0.2,

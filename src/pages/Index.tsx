@@ -7,7 +7,7 @@ import { LiveIndicator } from "@/components/dashboard/LiveIndicator";
 import { ViewToggle } from "@/components/layout/ViewToggle";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { TimeFilter, TimeFrame } from "@/components/filters/TimeFilter";
-import { InsightPanel } from "@/components/dashboard/InsightPanel";
+import { NewsPanel } from "@/components/dashboard/NewsPanel";
 import { mockCryptos, generateSentimentData } from "@/services/mockData";
 import { useToast } from "@/hooks/use-toast";
 
@@ -20,17 +20,31 @@ const Index = () => {
   const [marketSentiment, setMarketSentiment] = useState(generateSentimentData(30));
   const { toast } = useToast();
   
+  // Find the most positive cryptocurrency
+  const mostPositiveCrypto = [...mockCryptos].sort((a, b) => b.sentimentScore - a.sentimentScore)[0];
+  const [positiveCryptoSentiment, setPositiveCryptoSentiment] = useState(generateSentimentData(30, 0.3, 0.8));
+  
   // Simulate real-time updates
   useEffect(() => {
     const interval = setInterval(() => {
       // Update last updated time
       setLastUpdated(new Date().toLocaleString());
       
-      // Update the last data point in market sentiment
+      // Update the sentiment data
       setMarketSentiment(prev => {
         const newData = [...prev];
         const lastPoint = { ...newData[newData.length - 1] };
         lastPoint.sentiment = Math.max(-1, Math.min(1, lastPoint.sentiment + (Math.random() * 0.1 - 0.05)));
+        newData[newData.length - 1] = lastPoint;
+        return newData;
+      });
+      
+      // Update positive crypto sentiment
+      setPositiveCryptoSentiment(prev => {
+        const newData = [...prev];
+        const lastPoint = { ...newData[newData.length - 1] };
+        // Keep the sentiment mostly positive
+        lastPoint.sentiment = Math.max(0.2, Math.min(0.9, lastPoint.sentiment + (Math.random() * 0.1 - 0.03)));
         newData[newData.length - 1] = lastPoint;
         return newData;
       });
@@ -119,11 +133,16 @@ const Index = () => {
     }
     
     setMarketSentiment(generateSentimentData(days));
+    // Generate more positive sentiment for the most positive crypto
+    setPositiveCryptoSentiment(generateSentimentData(days, 0.3, 0.8));
   };
 
-  // Get the latest market sentiment value
+  // Get the latest sentiment values
   const latestSentiment = marketSentiment.length > 0 ? 
     marketSentiment[marketSentiment.length - 1].sentiment : 0;
+  
+  const latestPositiveSentiment = positiveCryptoSentiment.length > 0 ?
+    positiveCryptoSentiment[positiveCryptoSentiment.length - 1].sentiment : 0;
   
   // Get sentiment class for text color
   const getSentimentClass = (value: number) => {
@@ -159,11 +178,11 @@ const Index = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Market Sentiment Overview */}
+          {/* Most Positive Crypto Sentiment */}
           <div className="lg:col-span-2">
             <Card className="glass-card">
               <CardHeader className="pb-2 flex flex-row justify-between items-center">
-                <CardTitle>Sentimento do Mercado</CardTitle>
+                <CardTitle>{mostPositiveCrypto.name} - Sentimento Mais Positivo</CardTitle>
                 <TimeFilter 
                   defaultValue={timeFrame} 
                   onChange={handleTimeFrameChange}
@@ -174,27 +193,27 @@ const Index = () => {
                 <div className="flex flex-col md:flex-row gap-4 items-start md:items-center mb-4">
                   <div className="bg-dashboard-card px-4 py-2 rounded-lg">
                     <p className="text-sm text-muted-foreground">Sentimento Atual</p>
-                    <p className={`text-2xl font-bold ${getSentimentClass(latestSentiment)}`}>
-                      {getSentimentText(latestSentiment)}
+                    <p className={`text-2xl font-bold ${getSentimentClass(latestPositiveSentiment)}`}>
+                      {getSentimentText(latestPositiveSentiment)}
                     </p>
                   </div>
                   <p className="text-sm md:text-base text-muted-foreground">
-                    O sentimento do mercado está {latestSentiment > 0 ? "positivo" : latestSentiment < 0 ? "negativo" : "neutro"} 
+                    {mostPositiveCrypto.name} está com o sentimento mais positivo do mercado 
                     nas últimas {timeFrame === "1h" ? "horas" : timeFrame === "24h" ? "24 horas" : timeFrame === "7d" ? "7 dias" : "30 dias"}, com uma pontuação de sentimento de{" "}
-                    <span className={`font-medium ${getSentimentClass(latestSentiment)}`}>
-                      {latestSentiment.toFixed(2)}
+                    <span className={`font-medium ${getSentimentClass(latestPositiveSentiment)}`}>
+                      {latestPositiveSentiment.toFixed(2)}
                     </span>
                   </p>
                 </div>
                 
-                <SentimentChart data={marketSentiment} timeframe={timeFrame} />
+                <SentimentChart data={positiveCryptoSentiment} timeframe={timeFrame} />
               </CardContent>
             </Card>
           </div>
           
-          {/* Insights Panel */}
+          {/* News Panel */}
           <div className="lg:col-span-1">
-            <InsightPanel cryptos={mockCryptos} />
+            <NewsPanel />
           </div>
         </div>
 

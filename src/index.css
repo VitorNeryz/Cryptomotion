@@ -52,49 +52,50 @@
     --dashboard-border: 225 24% 25%;
   }
 
-  /* Light theme */
+  /* Light theme - Updated with new color palette */
   .light-theme {
-    --background: 0 0% 98%;
-    --foreground: 222 47% 11%;
+    /* New color palette: #EFE7DA #C1B6A3 #B3907A #E1DACA #F5F5EB */
+    --background: 43 33% 90%; /* #EFE7DA */
+    --foreground: 33 17% 25%; /* Dark text for contrast */
     
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: 34 20% 95%; /* #F5F5EB */
+    --card-foreground: 33 17% 25%;
     
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 34 20% 95%; /* #F5F5EB */
+    --popover-foreground: 33 17% 25%;
     
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 26 28% 59%; /* #B3907A */
+    --primary-foreground: 0 0% 100%;
     
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 38 17% 83%; /* #E1DACA */
+    --secondary-foreground: 33 17% 25%;
     
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 32 18% 70%; /* #C1B6A3 */
+    --muted-foreground: 33 17% 35%;
     
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 38 17% 83%; /* #E1DACA */
+    --accent-foreground: 33 17% 25%;
     
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
     
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
+    --border: 32 18% 70%; /* #C1B6A3 */
+    --input: 32 18% 70%; /* #C1B6A3 */
+    --ring: 26 28% 59%; /* #B3907A */
     
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 221 83% 53%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 210 40% 96.1%;
-    --sidebar-accent-foreground: 222 47% 11%;
-    --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 221 83% 53%;
+    --sidebar-background: 43 33% 90%; /* #EFE7DA */
+    --sidebar-foreground: 33 17% 25%;
+    --sidebar-primary: 26 28% 59%; /* #B3907A */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 38 17% 83%; /* #E1DACA */
+    --sidebar-accent-foreground: 33 17% 25%;
+    --sidebar-border: 32 18% 70%; /* #C1B6A3 */
+    --sidebar-ring: 26 28% 59%; /* #B3907A */
     
     /* Dashboard specific colors for light mode */
-    --dashboard-dark: 210 40% 98%;
-    --dashboard-card: 0 0% 100%;
-    --dashboard-border: 214 32% 91%;
+    --dashboard-dark: 43 33% 95%; /* Lighter version of #EFE7DA */
+    --dashboard-card: 34 20% 95%; /* #F5F5EB */
+    --dashboard-border: 32 18% 70%; /* #C1B6A3 */
   }
 }
 
