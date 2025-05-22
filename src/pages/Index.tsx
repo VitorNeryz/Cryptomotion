@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SentimentChart } from "@/components/dashboard/SentimentChart";
@@ -181,7 +182,7 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Most Positive Crypto Sentiment */}
           <div className="lg:col-span-2">
-            <Card className="glass-card">
+            <Card className="glass-card h-full">
               <CardHeader className="pb-2 flex flex-row justify-between items-center">
                 <CardTitle>{mostPositiveCrypto.name} - Sentimento Mais Positivo</CardTitle>
                 <TimeFilter 
@@ -214,7 +215,7 @@ const Index = () => {
           
           {/* News Panel */}
           <div className="lg:col-span-1">
-            <NewsPanel />
+            <NewsPanel height={300} />
           </div>
         </div>
 

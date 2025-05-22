@@ -112,12 +112,12 @@ export function SentimentChart({
             dataKey="timestamp" 
             tickFormatter={getTimeLabel}
             stroke="rgba(255,255,255,0.3)"
-            tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 12 }}
+            tick={{ fill: "#333333", fontSize: 12 }}
           />
           <YAxis 
             domain={[-1, 1]} 
             stroke="rgba(255,255,255,0.3)"
-            tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 12 }}
+            tick={{ fill: "#333333", fontSize: 12 }}
           />
           {showTooltip && (
             <Tooltip content={<CustomTooltip />} />

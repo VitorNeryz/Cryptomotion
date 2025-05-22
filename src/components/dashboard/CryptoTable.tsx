@@ -59,10 +59,10 @@ export function CryptoTable({ cryptos }: CryptoTableProps) {
         <thead>
           <tr className="border-b border-dashboard-border">
             <th 
-              className="py-3 text-left text-sm font-medium text-muted-foreground cursor-pointer"
+              className="py-3 text-center text-sm font-medium text-muted-foreground cursor-pointer"
               onClick={() => handleSort("name")}
             >
-              <div className="flex items-center gap-1">
+              <div className="flex items-center justify-center gap-1">
                 Criptomoeda
                 {sortField === "name" && (
                   sortDirection === "asc" ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
@@ -70,10 +70,10 @@ export function CryptoTable({ cryptos }: CryptoTableProps) {
               </div>
             </th>
             <th 
-              className="py-3 text-right text-sm font-medium text-muted-foreground cursor-pointer"
+              className="py-3 text-center text-sm font-medium text-muted-foreground cursor-pointer"
               onClick={() => handleSort("price")}
             >
-              <div className="flex items-center justify-end gap-1">
+              <div className="flex items-center justify-center gap-1">
                 Preço
                 {sortField === "price" && (
                   sortDirection === "asc" ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
@@ -81,10 +81,10 @@ export function CryptoTable({ cryptos }: CryptoTableProps) {
               </div>
             </th>
             <th 
-              className="py-3 text-right text-sm font-medium text-muted-foreground cursor-pointer"
+              className="py-3 text-center text-sm font-medium text-muted-foreground cursor-pointer"
               onClick={() => handleSort("change24h")}
             >
-              <div className="flex items-center justify-end gap-1">
+              <div className="flex items-center justify-center gap-1">
                 24h %
                 {sortField === "change24h" && (
                   sortDirection === "asc" ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
@@ -92,17 +92,17 @@ export function CryptoTable({ cryptos }: CryptoTableProps) {
               </div>
             </th>
             <th 
-              className="py-3 text-left text-sm font-medium text-muted-foreground cursor-pointer"
+              className="py-3 text-center text-sm font-medium text-muted-foreground cursor-pointer"
               onClick={() => handleSort("sentimentScore")}
             >
-              <div className="flex items-center gap-1">
+              <div className="flex items-center justify-center gap-1">
                 Sentimento
                 {sortField === "sentimentScore" && (
                   sortDirection === "asc" ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
                 )}
               </div>
             </th>
-            <th className="py-3 text-right text-sm font-medium text-muted-foreground">
+            <th className="py-3 text-center text-sm font-medium text-muted-foreground">
               Tendência
             </th>
           </tr>
@@ -110,25 +110,31 @@ export function CryptoTable({ cryptos }: CryptoTableProps) {
         <tbody className="divide-y divide-dashboard-border">
           {sortedCryptos.map((crypto) => (
             <tr key={crypto.id} className="hover:bg-dashboard-card/50">
-              <td className="py-4 text-sm font-medium">
-                <Link to={`/crypto/${crypto.id}`} className="hover:text-primary flex items-center gap-2">
+              <td className="py-4 text-sm font-medium text-center">
+                <Link to={`/crypto/${crypto.id}`} className="hover:text-primary flex items-center justify-center gap-2">
                   <span>{crypto.name}</span>
                   <span className="text-xs bg-dashboard-border px-2 py-0.5 rounded-full text-muted-foreground">
                     {crypto.symbol}
                   </span>
                 </Link>
               </td>
-              <td className="py-4 text-sm text-right font-medium">
+              <td className="py-4 text-sm text-center font-medium">
                 ${crypto.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
-              <td className="py-4 text-sm text-right">
-                <TrendIndicator trend={crypto.trend} value={crypto.change24h} />
+              <td className="py-4 text-sm text-center">
+                <div className="flex justify-center">
+                  <TrendIndicator trend={crypto.trend} value={crypto.change24h} />
+                </div>
               </td>
-              <td className="py-4 text-sm">
-                <SentimentScore score={crypto.sentimentScore} size="sm" showLabel={false} />
+              <td className="py-4 text-sm text-center">
+                <div className="flex justify-center">
+                  <SentimentScore score={crypto.sentimentScore} size="sm" showLabel={false} />
+                </div>
               </td>
-              <td className="py-4 text-sm text-right">
-                <TrendIndicator trend={crypto.trend} showValue={false} variant="trend" />
+              <td className="py-4 text-sm text-center">
+                <div className="flex justify-center">
+                  <TrendIndicator trend={crypto.trend} showValue={false} variant="trend" />
+                </div>
               </td>
             </tr>
           ))}
