@@ -5,9 +5,42 @@ export const generateSentimentData = (days: number, bias?: "positive" | "negativ
   const data = [];
   const now = new Date();
   
-  for (let i = days; i >= 0; i--) {
+  let interval: number;
+  let intervalUnit: 'minutes' | 'hours' | 'days';
+  
+  // Set the appropriate interval based on days
+  if (days <= 1) {
+    interval = 5; // 5 minute intervals for 1h or 24h
+    intervalUnit = 'minutes';
+  } else if (days <= 7) {
+    interval = 1; // 1 hour intervals for 7d
+    intervalUnit = 'hours';
+  } else {
+    interval = 1; // 1 day interval for 30d or more
+    intervalUnit = 'days';
+  }
+  
+  // Calculate number of data points based on interval
+  let dataPoints: number;
+  if (intervalUnit === 'minutes') {
+    dataPoints = days === 1 ? 12 : 24 * 12; // 5 min intervals = 12 per hour
+  } else if (intervalUnit === 'hours') {
+    dataPoints = days * 24;
+  } else {
+    dataPoints = days;
+  }
+  
+  for (let i = dataPoints; i >= 0; i--) {
     const date = new Date(now);
-    date.setDate(now.getDate() - i);
+    
+    // Adjust date based on interval unit
+    if (intervalUnit === 'minutes') {
+      date.setMinutes(date.getMinutes() - (i * interval));
+    } else if (intervalUnit === 'hours') {
+      date.setHours(date.getHours() - (i * interval));
+    } else {
+      date.setDate(date.getDate() - (i * interval));
+    }
     
     let sentimentBase;
     switch (bias) {

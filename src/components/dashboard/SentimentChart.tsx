@@ -105,19 +105,19 @@ export function SentimentChart({
             <CartesianGrid 
               strokeDasharray="3 3" 
               vertical={false} 
-              stroke="rgba(255,255,255,0.1)" 
+              stroke="rgba(0,0,0,0.1)" 
             />
           )}
           <XAxis 
             dataKey="timestamp" 
             tickFormatter={getTimeLabel}
-            stroke="rgba(255,255,255,0.3)"
-            tick={{ fill: "#333333", fontSize: 12 }}
+            stroke="rgba(0,0,0,0.5)"
+            tick={{ fill: "#111111", fontSize: 12 }}
           />
           <YAxis 
             domain={[-1, 1]} 
-            stroke="rgba(255,255,255,0.3)"
-            tick={{ fill: "#333333", fontSize: 12 }}
+            stroke="rgba(0,0,0,0.5)"
+            tick={{ fill: "#111111", fontSize: 12 }}
           />
           {showTooltip && (
             <Tooltip content={<CustomTooltip />} />
