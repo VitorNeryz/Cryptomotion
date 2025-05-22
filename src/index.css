@@ -92,8 +92,8 @@
     --sidebar-border: 32 18% 70%; /* #C1B6A3 */
     --sidebar-ring: 26 28% 59%; /* #B3907A */
     
-    /* Dashboard specific colors for light mode - Updated background color */
-    --dashboard-dark: 200 17% 62%; /* #8DA3B0 */
+    /* Dashboard specific colors for light mode */
+    --dashboard-dark: 43 33% 95%; /* Lighter version of #EFE7DA */
     --dashboard-card: 34 20% 95%; /* #F5F5EB */
     --dashboard-border: 32 18% 70%; /* #C1B6A3 */
   }

@@ -13,7 +13,7 @@ interface NewsPanelProps {
   height?: number;
 }
 
-export function NewsPanel({ newsCount = 2, height = 300 }: NewsPanelProps) {
+export function NewsPanel({ newsCount = 3, height = 300 }: NewsPanelProps) {
   const [news, setNews] = useState<CryptoNews[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,7 +38,7 @@ export function NewsPanel({ newsCount = 2, height = 300 }: NewsPanelProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {[1, 2].map((i) => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="flex gap-3">
                 <Skeleton className="h-24 w-full rounded-md" />
               </div>
@@ -58,7 +58,7 @@ export function NewsPanel({ newsCount = 2, height = 300 }: NewsPanelProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 overflow-hidden flex flex-col">
-        <div className="space-y-4 overflow-y-auto flex-1 pr-2 custom-scrollbar">
+        <div className="space-y-4 overflow-y-auto flex-1 pr-2">
           {news.map((item) => (
             <NewsCard key={item.id} news={item} />
           ))}

@@ -55,7 +55,7 @@ export function CryptoTable({ cryptos }: CryptoTableProps) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-center">
+      <table className="w-full">
         <thead>
           <tr className="border-b border-dashboard-border">
             <th 
