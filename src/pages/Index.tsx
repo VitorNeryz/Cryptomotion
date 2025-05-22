@@ -22,7 +22,8 @@ const Index = () => {
   
   // Find the most positive cryptocurrency
   const mostPositiveCrypto = [...mockCryptos].sort((a, b) => b.sentimentScore - a.sentimentScore)[0];
-  const [positiveCryptoSentiment, setPositiveCryptoSentiment] = useState(generateSentimentData(30, 0.3, 0.8));
+  // Pass a bias for more positive sentiment data (instead of a numeric range)
+  const [positiveCryptoSentiment, setPositiveCryptoSentiment] = useState(generateSentimentData(30, "positive"));
   
   // Simulate real-time updates
   useEffect(() => {
@@ -133,8 +134,8 @@ const Index = () => {
     }
     
     setMarketSentiment(generateSentimentData(days));
-    // Generate more positive sentiment for the most positive crypto
-    setPositiveCryptoSentiment(generateSentimentData(days, 0.3, 0.8));
+    // Generate more positive sentiment for the most positive crypto - using correct parameter
+    setPositiveCryptoSentiment(generateSentimentData(days, "positive"));
   };
 
   // Get the latest sentiment values
