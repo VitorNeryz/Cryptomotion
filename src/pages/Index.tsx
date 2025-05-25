@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SentimentChart } from "@/components/dashboard/SentimentChart";
@@ -8,7 +9,7 @@ import { ViewToggle } from "@/components/layout/ViewToggle";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { TimeFilter, TimeFrame } from "@/components/filters/TimeFilter";
 import { NewsPanel } from "@/components/dashboard/NewsPanel";
-import { fetchCryptoData, fetchSentimentData } from "@/services/mockData";
+import { fetchCryptoData, fetchSentimentData, mockCryptos } from "@/services/mockData";
 import { useToast } from "@/hooks/use-toast";
 
 type ViewMode = "compact" | "expanded";
