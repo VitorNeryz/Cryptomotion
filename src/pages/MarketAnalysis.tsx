@@ -1,11 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SentimentChart } from "@/components/dashboard/SentimentChart";
 import { LiveIndicator } from "@/components/dashboard/LiveIndicator";
 import { KeywordCloud } from "@/components/dashboard/KeywordCloud";
 import { AppSidebar } from "@/components/layout/AppSidebar";
-import { generateSentimentData, generateKeywords, mockCryptos } from "@/services/mockData";
+import { fetchSentimentData, generateKeywords, fetchCryptoData } from "@/services/mockData";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { CryptoCard } from "@/components/dashboard/CryptoCard";
 
@@ -20,14 +20,34 @@ type Timeframe = typeof timeframeOptions[number]["value"];
 const MarketAnalysis = () => {
   const [timeframe, setTimeframe] = useState<Timeframe>("24h");
   const [lastUpdated] = useState(new Date().toLocaleString());
+  const [marketSentiment, setMarketSentiment] = useState([]);
+  const [cryptos, setCryptos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Generate market sentiment data
-  const marketSentiment = generateSentimentData(
-    timeframe === "24h" ? 24 : timeframe === "7d" ? 7 : 30
-  );
+  // Load initial data
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        const days = timeframe === "24h" ? 24 : timeframe === "7d" ? 7 : 30;
+        const sentimentData = await fetchSentimentData(days);
+        const cryptoData = await fetchCryptoData();
+        
+        setMarketSentiment(sentimentData);
+        setCryptos(cryptoData);
+      } catch (error) {
+        console.error('Error loading market analysis data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+  }, [timeframe]);
   
   // Calculate average sentiment
-  const avgSentiment = marketSentiment.reduce((acc, curr) => acc + curr.sentiment, 0) / marketSentiment.length;
+  const avgSentiment = marketSentiment.length > 0 ? 
+    marketSentiment.reduce((acc, curr) => acc + curr.sentiment, 0) / marketSentiment.length : 0;
   
   // Generate overall keywords
   const marketKeywords = generateKeywords(avgSentiment);
@@ -50,20 +70,33 @@ const MarketAnalysis = () => {
   
   // Get top movers data
   const getTopMovers = () => {
-    const sortedByChange = [...mockCryptos].sort((a, b) => Math.abs(b.change24h) - Math.abs(a.change24h));
+    const sortedByChange = [...cryptos].sort((a, b) => Math.abs(b.change24h) - Math.abs(a.change24h));
     return sortedByChange.slice(0, 5);
   };
   
   // Filter for positive and negative sentiment cryptos
   const getPositiveSentimentCryptos = () => {
-    return [...mockCryptos].filter(crypto => crypto.sentimentScore > 0.2)
+    return [...cryptos].filter(crypto => crypto.sentimentScore > 0.2)
       .sort((a, b) => b.sentimentScore - a.sentimentScore);
   };
   
   const getNegativeSentimentCryptos = () => {
-    return [...mockCryptos].filter(crypto => crypto.sentimentScore < -0.2)
+    return [...cryptos].filter(crypto => crypto.sentimentScore < -0.2)
       .sort((a, b) => a.sentimentScore - b.sentimentScore);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-dashboard-dark pb-16">
+        <AppSidebar />
+        <main className="p-4 sm:p-6 md:p-8 ml-0 md:ml-64">
+          <div className="flex justify-center items-center h-64">
+            <div className="text-lg">Carregando análise de mercado...</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-dashboard-dark pb-16">

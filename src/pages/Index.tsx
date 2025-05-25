@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SentimentChart } from "@/components/dashboard/SentimentChart";
@@ -9,7 +8,7 @@ import { ViewToggle } from "@/components/layout/ViewToggle";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { TimeFilter, TimeFrame } from "@/components/filters/TimeFilter";
 import { NewsPanel } from "@/components/dashboard/NewsPanel";
-import { mockCryptos, generateSentimentData } from "@/services/mockData";
+import { fetchCryptoData, fetchSentimentData } from "@/services/mockData";
 import { useToast } from "@/hooks/use-toast";
 
 type ViewMode = "compact" | "expanded";
@@ -18,13 +17,42 @@ const Index = () => {
   const [view, setView] = useState<ViewMode>("compact");
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("24h");
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleString());
-  const [marketSentiment, setMarketSentiment] = useState(generateSentimentData(30));
+  const [marketSentiment, setMarketSentiment] = useState([]);
+  const [cryptos, setCryptos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   
   // Find the most positive cryptocurrency
-  const mostPositiveCrypto = [...mockCryptos].sort((a, b) => b.sentimentScore - a.sentimentScore)[0];
-  // Pass a bias for more positive sentiment data (instead of a numeric range)
-  const [positiveCryptoSentiment, setPositiveCryptoSentiment] = useState(generateSentimentData(30, "positive"));
+  const mostPositiveCrypto = cryptos.length > 0 ? 
+    [...cryptos].sort((a, b) => b.sentimentScore - a.sentimentScore)[0] : null;
+  
+  const [positiveCryptoSentiment, setPositiveCryptoSentiment] = useState([]);
+  
+  // Load initial data
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        const cryptoData = await fetchCryptoData();
+        const sentimentData = await fetchSentimentData(30);
+        const positiveSentimentData = await fetchSentimentData(30, "positive");
+        
+        setCryptos(cryptoData);
+        setMarketSentiment(sentimentData);
+        setPositiveCryptoSentiment(positiveSentimentData);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        toast({
+          title: "Erro ao carregar dados",
+          description: "Não foi possível carregar os dados. Usando dados de exemplo.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+  }, [toast]);
   
   // Simulate real-time updates
   useEffect(() => {
@@ -35,19 +63,23 @@ const Index = () => {
       // Update the sentiment data
       setMarketSentiment(prev => {
         const newData = [...prev];
-        const lastPoint = { ...newData[newData.length - 1] };
-        lastPoint.sentiment = Math.max(-1, Math.min(1, lastPoint.sentiment + (Math.random() * 0.1 - 0.05)));
-        newData[newData.length - 1] = lastPoint;
+        if (newData.length > 0) {
+          const lastPoint = { ...newData[newData.length - 1] };
+          lastPoint.sentiment = Math.max(-1, Math.min(1, lastPoint.sentiment + (Math.random() * 0.1 - 0.05)));
+          newData[newData.length - 1] = lastPoint;
+        }
         return newData;
       });
       
       // Update positive crypto sentiment
       setPositiveCryptoSentiment(prev => {
         const newData = [...prev];
-        const lastPoint = { ...newData[newData.length - 1] };
-        // Keep the sentiment mostly positive
-        lastPoint.sentiment = Math.max(0.2, Math.min(0.9, lastPoint.sentiment + (Math.random() * 0.1 - 0.03)));
-        newData[newData.length - 1] = lastPoint;
+        if (newData.length > 0) {
+          const lastPoint = { ...newData[newData.length - 1] };
+          // Keep the sentiment mostly positive
+          lastPoint.sentiment = Math.max(0.2, Math.min(0.9, lastPoint.sentiment + (Math.random() * 0.1 - 0.03)));
+          newData[newData.length - 1] = lastPoint;
+        }
         return newData;
       });
     }, 5000);
@@ -110,10 +142,10 @@ const Index = () => {
   }, [marketSentiment, toast]);
 
   // Handle time frame changes
-  const handleTimeFrameChange = (newTimeFrame: TimeFrame) => {
+  const handleTimeFrameChange = async (newTimeFrame: TimeFrame) => {
     setTimeFrame(newTimeFrame);
     
-    // Regenerate data based on selected time frame
+    // Calculate days based on selected time frame
     let days = 30;
     
     switch (newTimeFrame) {
@@ -134,9 +166,15 @@ const Index = () => {
         break;
     }
     
-    setMarketSentiment(generateSentimentData(days));
-    // Generate more positive sentiment for the most positive crypto - using correct parameter
-    setPositiveCryptoSentiment(generateSentimentData(days, "positive"));
+    try {
+      const sentimentData = await fetchSentimentData(days);
+      const positiveSentimentData = await fetchSentimentData(days, "positive");
+      
+      setMarketSentiment(sentimentData);
+      setPositiveCryptoSentiment(positiveSentimentData);
+    } catch (error) {
+      console.error('Error updating sentiment data:', error);
+    }
   };
 
   // Get the latest sentiment values
@@ -162,6 +200,19 @@ const Index = () => {
     return "Muito Negativo";
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-dashboard-dark pb-16">
+        <AppSidebar />
+        <main className="p-4 sm:p-6 md:p-8 ml-0 md:ml-64">
+          <div className="flex justify-center items-center h-64">
+            <div className="text-lg">Carregando dados...</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-dashboard-dark pb-16">
       <AppSidebar />
@@ -184,7 +235,9 @@ const Index = () => {
           <div className="lg:col-span-2">
             <Card className="glass-card h-full">
               <CardHeader className="pb-2 flex flex-row justify-between items-center">
-                <CardTitle>{mostPositiveCrypto.name} - Sentimento Mais Positivo</CardTitle>
+                <CardTitle>
+                  {mostPositiveCrypto ? `${mostPositiveCrypto.name} - Sentimento Mais Positivo` : "Carregando..."}
+                </CardTitle>
                 <TimeFilter 
                   defaultValue={timeFrame} 
                   onChange={handleTimeFrameChange}
@@ -192,30 +245,34 @@ const Index = () => {
                 />
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center mb-4">
-                  <div className="bg-dashboard-card px-4 py-2 rounded-lg">
-                    <p className="text-sm text-muted-foreground">Sentimento Atual</p>
-                    <p className={`text-2xl font-bold ${getSentimentClass(latestPositiveSentiment)}`}>
-                      {getSentimentText(latestPositiveSentiment)}
-                    </p>
-                  </div>
-                  <p className="text-sm md:text-base text-muted-foreground">
-                    {mostPositiveCrypto.name} está com o sentimento mais positivo do mercado 
-                    nas últimas {timeFrame === "1h" ? "horas" : timeFrame === "24h" ? "24 horas" : timeFrame === "7d" ? "7 dias" : "30 dias"}, com uma pontuação de sentimento de{" "}
-                    <span className={`font-medium ${getSentimentClass(latestPositiveSentiment)}`}>
-                      {latestPositiveSentiment.toFixed(2)}
-                    </span>
-                  </p>
-                </div>
-                
-                <SentimentChart data={positiveCryptoSentiment} timeframe={timeFrame} />
+                {mostPositiveCrypto && (
+                  <>
+                    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center mb-4">
+                      <div className="bg-dashboard-card px-4 py-2 rounded-lg">
+                        <p className="text-sm text-muted-foreground">Sentimento Atual</p>
+                        <p className={`text-2xl font-bold ${getSentimentClass(latestPositiveSentiment)}`}>
+                          {getSentimentText(latestPositiveSentiment)}
+                        </p>
+                      </div>
+                      <p className="text-sm md:text-base text-muted-foreground">
+                        {mostPositiveCrypto.name} está com o sentimento mais positivo do mercado 
+                        nas últimas {timeFrame === "1h" ? "horas" : timeFrame === "24h" ? "24 horas" : timeFrame === "7d" ? "7 dias" : "30 dias"}, com uma pontuação de sentimento de{" "}
+                        <span className={`font-medium ${getSentimentClass(latestPositiveSentiment)}`}>
+                          {latestPositiveSentiment.toFixed(2)}
+                        </span>
+                      </p>
+                    </div>
+                    
+                    <SentimentChart data={positiveCryptoSentiment} timeframe={timeFrame} />
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
           
           {/* News Panel */}
           <div className="lg:col-span-1">
-            <NewsPanel height={300} />
+            <NewsPanel newsCount={2} height={300} />
           </div>
         </div>
 
@@ -224,14 +281,14 @@ const Index = () => {
           <h2 className="text-xl font-bold mb-4">Principais Criptomoedas</h2>
           {view === "compact" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {mockCryptos.slice(0, 8).map((crypto) => (
+              {cryptos.slice(0, 8).map((crypto) => (
                 <CryptoCard key={crypto.id} crypto={crypto} />
               ))}
             </div>
           ) : (
             <Card className="glass-card">
               <CardContent className="pt-6">
-                <CryptoTable cryptos={mockCryptos} />
+                <CryptoTable cryptos={cryptos} />
               </CardContent>
             </Card>
           )}

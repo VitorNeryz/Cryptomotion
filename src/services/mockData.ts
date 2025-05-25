@@ -1,6 +1,37 @@
 
 import { CryptoData } from "@/components/dashboard/CryptoCard";
 
+// API integration functions
+export const fetchCryptoData = async (): Promise<CryptoData[]> => {
+  try {
+    // TODO: Replace with actual API endpoint
+    // const response = await fetch('/api/cryptocurrencies');
+    // if (!response.ok) throw new Error('Failed to fetch crypto data');
+    // return await response.json();
+    
+    // Fallback to mock data for now
+    return mockCryptos;
+  } catch (error) {
+    console.error('Error fetching crypto data:', error);
+    return mockCryptos; // Fallback to mock data
+  }
+};
+
+export const fetchSentimentData = async (days: number, bias?: "positive" | "negative" | "neutral") => {
+  try {
+    // TODO: Replace with actual API endpoint
+    // const response = await fetch(`/api/sentiment?days=${days}&bias=${bias || ''}`);
+    // if (!response.ok) throw new Error('Failed to fetch sentiment data');
+    // return await response.json();
+    
+    // Fallback to generated data for now
+    return generateSentimentData(days, bias);
+  } catch (error) {
+    console.error('Error fetching sentiment data:', error);
+    return generateSentimentData(days, bias); // Fallback to generated data
+  }
+};
+
 export const generateSentimentData = (days: number, bias?: "positive" | "negative" | "neutral") => {
   const data = [];
   const now = new Date();
